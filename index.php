@@ -20,7 +20,15 @@
 
 
 
+
+
+
+
 </form>
+
+<a href="login.php">
+<h4>Already registered? Click here to login</h4>
+</a>
 
 
 
@@ -37,9 +45,9 @@ if($_POST){
     }
     else{
         $sql ="SELECT * FROM users WHERE username = ?";
-        if($stmt = $conn->prepare($sql)){
-            $stmt->bind_param("s", $param_username);
-        }
+            if($stmt = $conn->prepare($sql)){
+                $stmt->bind_param("s", $param_username);
+            }
         // $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $param_username);
         $param_username = trim($_POST['username']);
@@ -51,16 +59,16 @@ if($_POST){
         //set parameter
         // $param_username = trim($_POST['username']);
         if ($stmt->execute()){
-                $stmt->store_result();
+            $stmt->store_result();
                 // echo "if statement on line 52 runs";
-                if($stmt->num_rows ==1){
-                    $username_err = "this username is alredy taken";
-                    echo $username_err;
-                }
-                else{
-                    $username = trim($_POST['username']);
-                    // echo "username is being defined";
-                }
+            if($stmt->num_rows ==1){
+                $username_err = "this username is alredy taken";
+                echo $username_err;
+            }
+            else{
+                $username = trim($_POST['username']);
+                // echo "username is being defined";
+            }
         }
         else{
             echo "Oops! someting went wrong. Please try again later";
@@ -94,7 +102,7 @@ if($_POST){
 
 
 
-//second password validation 
+    //second password validation 
     if(empty(trim($_POST['password-confirm']))){
         $confirm_password_err="Please enter second password";
         echo $confirm_password_err;
