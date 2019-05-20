@@ -4,9 +4,7 @@ require_once "conn.php";
 
 
 $newentry=$_POST["val"];
-    if($_POST["val"]){
-        
-    }
+
     if(empty(trim($_POST["val"]))){
             $username_err = "Please enter something you need to do.";
             echo $username_err;
@@ -21,6 +19,7 @@ $newentry=$_POST["val"];
             $stmt->bind_param("ss", $param_username, $param_todo);
             $param_todo=$todo;
             $param_username = "justus";
+            // $param_id = 1;
             // $param_username=$username;
             $stmt->execute();
             $stmt->close();
