@@ -16,17 +16,17 @@ if($before_row<= 0){
 echo json_encode($deleteArray);
 
 
-$after_sql = "SELECT * FROM list WHERE username='$param_username'";
-$after_result = mysqli_query($conn, $after_sql);
-$tempNum=0;
-while($row["id"] = mysqli_fetch_assoc($after_result)){ 
-    foreach($row as $value) {
-            $list_id_count = $value["id"];
-            $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
-            if(mysqli_query($conn, $sql_list_id)){
-                $tempNum++ ;
-            }
-    }
-};
+// $after_sql = "SELECT * FROM list WHERE username='$param_username'";
+// $after_result = mysqli_query($conn, $after_sql);
+// $tempNum=0;
+// while($row["id"] = mysqli_fetch_assoc($after_result)){ 
+//     foreach($row as $value) {
+//             $list_id_count = $value["id"];
+//             $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
+//             if(mysqli_query($conn, $sql_list_id)){
+//                 $tempNum++ ;
+//             }
+//     }
+// };
 
 ?>
