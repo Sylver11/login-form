@@ -1,3 +1,11 @@
 .complete {
     text-decoration: line-through;
 }
+
+
+
+
+.none {
+
+    display: none
+}

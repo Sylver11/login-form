@@ -12,7 +12,7 @@ session_start();
     <title>Todo list</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 <nav class="navbar"><p href="">Home</p><p>About</p><p>Me</p></nav>
@@ -27,26 +27,29 @@ session_start();
 </form>
 
 
+<div id="inputId"></div>
+
+
 
 
 <?php
-// require_once "conn.php";
-// $tempNum = 0;
-// $param_username = "justus";
-// $sql = "SELECT * FROM list WHERE username='$param_username'";
-// $result = mysqli_query($conn, $sql);
-// echo "<ul>";
-// while(($row['items'] = mysqli_fetch_assoc($result)) && ($row['id'] = mysqli_fetch_assoc($result))){ 
-//     foreach($row as $value) {
-//             echo "<li class=\"panel\">" . $value["items"] . "</li>";
-//             $list_id_count = $value["id"];
-//             $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
-//             if(mysqli_query($conn, $sql_list_id)){
-//                 $tempNum++ ;
-//             }
-//     }
-// };
-// echo "</ul>";
+require_once "conn.php";
+$tempNum = 0;
+$param_username = "justus";
+$sql = "SELECT * FROM list WHERE username='$param_username'";
+$result = mysqli_query($conn, $sql);
+echo "<ul>";
+while(($row['items'] = mysqli_fetch_assoc($result)) && ($row['id'] = mysqli_fetch_assoc($result))){ 
+    foreach($row as $value) {
+            echo "<li>" . $value["items"] . "</li>";
+            $list_id_count = $value["id"];
+            $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
+            if(mysqli_query($conn, $sql_list_id)){
+                $tempNum++ ;
+            }
+    }
+};
+echo "</ul>";
 ?>
 
 
@@ -57,29 +60,35 @@ session_start();
 
 <script>
 
-//add antoher column that inputs the actual order of the list items of the user 
-//add decending and acsedding command so that highest id number is displayed from highest to lowest. All doable in mysql
-//<!-- print out everything in php and only start html part with ul and in between put the php --> just the actual submit button stays static
-//check out clean up()funtion in js maybe custom function
 
 
 $(document).ready(function(){
     $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
+// cleanUp();
 
 function cleanUp(){
     $.ajax({
             type: "POST",
-            url: "pop.php",
-            success: function(succ){
-                alert("hello")
+            url: "todo.php",
+            success: function(data) {  
+                console.log(data); 
+                        $( "#inputId" ).val(data); 
             }
-
-
-
-
 
     })
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //  $.ajax({
@@ -116,7 +125,7 @@ function cleanUp(){
             data: "val=" + newEntry,
             dataType: "text",
             success:function(data){
-                alert(data);
+                
                 cleanUp();
             },
             error: function(jqxhr, status, exception) {
@@ -127,19 +136,20 @@ function cleanUp(){
 
 
     $(".del").click(function(){
-        var checkNum = $(this).parent().index();//this refers to the two buttons on the rederstrike so if any of the parents are cliced it will give the index of that entry 
-        // console.log(checkNum);
-        console.log(checkNum);
+        var checkNum = $(this).parent().index();
         $.ajax({
             type: "POST",
             url: "delete.php",
             data: "delete=" + checkNum,
             dataType: "text",
-            success: function (){
-                cleanUp();
-            console.log("this is running")
-            }
-
+            success: function(deleteArray){
+                var del = JSON.parse(deleteArray);
+                console.log(del);
+                    if(del[1]  ==1){
+                        console.log("this runs");
+                        $("li:eq(" + del[0] + ")").addClass("none");
+                    }
+                }
         })
     })
 

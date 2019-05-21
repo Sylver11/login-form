@@ -1,15 +1,11 @@
 
 <?php
 require_once "conn.php";
-
-
 $newentry=$_POST["val"];
-
     if(empty(trim($_POST["val"]))){
             $username_err = "Please enter something you need to do.";
             echo $username_err;
         }    
-
         else{
             $todo = trim($_POST["val"]);
             // $_SESSION['username'];
@@ -24,13 +20,4 @@ $newentry=$_POST["val"];
             $stmt->execute();
             $stmt->close();
         }   
-
-
-
-
-
-
-
-
-
 ?>
