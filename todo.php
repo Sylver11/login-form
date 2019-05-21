@@ -29,105 +29,40 @@ session_start();
 </form>
 <div id="inputId"></div>
 
-<?php
-// require_once "conn.php";
-// $tempNum = 0;
-// $param_username = "justus";
-// $sql = "SELECT * FROM list WHERE username='$param_username'";
-// $result = mysqli_query($conn, $sql);
-// echo "<ul>";
-// $todoitem = mysqli_fetch_all($result, MYSQLI_ASSOC);
-// mysqli_free_result($result);
-//     foreach($todoitem as $value) {
-//             echo "<li>" . $value["items"] . "</li>";
-//             $list_id_count = $value["id"];
-//             $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
-//             if(mysqli_query($conn, $sql_list_id)){
-//                 $tempNum++ ;
-//             }
-//     }
-// echo "</ul>";
-?>
-
-
 
 <script>
-
-// strike();
-// function strike(){
-//     $.ajax({
-//         type: "POST",
-//         url: "strike.php",
-//         async: true,
-//         data: {complete: '1'},
-//         success: function(strikeArr){
-//             console.log(obj);
-//             var obj = JSON.parse(strikeArr);
-//             strikeArrLength = obj.length;
-//             for(i = 0; i < strikeArrLength; i++){
-//                 if(obj[i] == 1){
-//                     $("li:eq(" + i + ")").find("p").css("text-decoration", "line-through");
-//                 }else{
-//                     $("li:eq(" + i + ")").find("p").css("text-decoration", "none ");
-//                 }
-//             }
-//         }
-//     })
-// }
-// $(document).ready(function(){
    
 cleanUp();
 function cleanUp(){
     $.ajax({
-        async: true,
+            async: true,
+            type: "POST",
+            url: "pop.php",
+            success: function(data) {  
+                $( "#inputId" ).html(data); 
+                $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
+            }
+    })
+}
+$(document).ready(function(){
+    $.ajax({
         type: "POST",
-        url: "pop.php",
-        success: function(data) {  
-            $( "#inputId" ).html(data); 
-            $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
-            renderStrike();
+        url: "renderStrike.php",
+        async: true,
+        data: {complete: '1'},
+        success: function(strikeArr){
+            console.log(strikeArr);
+            var obj = JSON.parse(strikeArr);
+            strikeArrLength = obj.length;
+            for(i = 0; i < strikeArrLength; i++){
+                if(obj[i] == 1){
+                    $("li:eq(" + i + ")").find("p").css("text-decoration", "line-through");
+                }else{
+                    $("li:eq(" + i + ")").find("p").css("text-decoration", "none ");
+                }
+            }
         }
     })
-}
-
-function refresh(){
-    $.ajax({
-            async: true,
-            type: "POST",
-            url: "refresh.php",
-    })
-}
-
-
-
-
-
-    $(".del").click(function(){
-        // event.preventDefault();
-        var checkNum = $(this).parent().index();
-        $.ajax({
-            async: true,
-            type: "POST",
-            url: "delete.php",
-            data: "delete=" + checkNum,
-            dataType: "text",
-            success: function(deleteArray){
-                var del = JSON.parse(deleteArray);
-                if(del[1]  ==1){
-                    $("li:eq(" + del[0] + ")").addClass("none");
-                }
-                // refresh();
-                // cleanUp();
-                // renderStrike();
-            }
-        })
-    })
-
-
-
-
-
-
     $(".button").click(function(event){
         event.preventDefault();
         var newEntry = $("#newentry").val();
@@ -141,50 +76,30 @@ function refresh(){
                 duedate: date,
                 val: newEntry
             },
-            success:function(){
+            success:function(data){
                 cleanUp();
-                // renderStrike();
             },
-            // error: function(jqxhr, status, exception) {
-            //     alert('Exception:', exeception)
-            // }
         })        
     })
-
-
-
-
-    renderStrike();
-    function renderStrike(){
+    $(".del").click(function(){
+        var checkNum = $(this).parent().index();
         $.ajax({
-            type: "POST",
-            url: "renderStrike.php",
             async: true,
-            data: {complete: '1'},
-            success: function(strikeArr){
-                // console.log(strikeArr);
-                var obj = JSON.parse(strikeArr);
-                strikeArrLength = obj.length;
-                for(i = 0; i < strikeArrLength; i++){
-                    if(obj[i] == 1){
-                        $("li:eq(" + i + ")").find("p").css("text-decoration", "line-through");
-                    }else{
-                        $("li:eq(" + i + ")").find("p").css("text-decoration", "none ");
+            type: "POST",
+            url: "delete.php",
+            data: "delete=" + checkNum,
+            dataType: "text",
+            success: function(deleteArray){
+                var del = JSON.parse(deleteArray);
+                console.log(del);
+                    if(del[1]  ==1){
+                        console.log("this runs");
+                        $("li:eq(" + del[0] + ")").addClass("none");
                     }
                 }
-            }
         })
-    }
-
-
-
-    
-
-    
-    
-
+    })
     $(".done").click(function(){
-        event.preventDefault();
         var checkNum = $(this).parent().index();
         $.ajax({
             async: true,
@@ -194,6 +109,7 @@ function refresh(){
             dataType: "text",
             success: function(doneArray){
                 var obj = JSON.parse(doneArray);
+                console.log(obj);
                 strikeArrLength = obj.length;
                 for(i = 0; i < strikeArrLength; i++){
                     if(obj[i] == 1){
@@ -203,12 +119,10 @@ function refresh(){
                         $("li:eq(" + i + ")").find("p").css("text-decoration", "none");
                     }
                 }
-                // cleanUp();
             }
         })
     })
-// })
-
+})
 </script>
 
 
