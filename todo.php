@@ -15,129 +15,83 @@ session_start();
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-<nav class="navbar"><p href="">Home</p><p>About</p><p>Me</p></nav>
 
+<nav class="navbar"><p href="">Home</p><p>About</p><p>Me</p></nav>
 <form>
     <input id="newentry" type="text" name="newentry">
-    <button class="button" type="submit">Add</button>  
+    <label for="">Due Date: 
+    <input id="date" type="date" name="duedate">
+    </label>
+    <button class="button">Add</button>  
 </form>
-
 <form action="todo.php" method="POST">
     <input type="button" value="Logout" name="logout">
 </form>
-
-
 <div id="inputId"></div>
 
 
-
-
-<?php
-require_once "conn.php";
-$tempNum = 0;
-$param_username = "justus";
-$sql = "SELECT * FROM list WHERE username='$param_username'";
-$result = mysqli_query($conn, $sql);
-echo "<ul>";
-while(($row['items'] = mysqli_fetch_assoc($result)) && ($row['id'] = mysqli_fetch_assoc($result))){ 
-    foreach($row as $value) {
-            echo "<li>" . $value["items"] . "</li>";
-            $list_id_count = $value["id"];
-            $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
-            if(mysqli_query($conn, $sql_list_id)){
-                $tempNum++ ;
-            }
-    }
-};
-echo "</ul>";
-?>
-
-
-
-
-
-
-
 <script>
-
-
-
-$(document).ready(function(){
-    $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
-// cleanUp();
-
+   
+cleanUp();
 function cleanUp(){
     $.ajax({
+            async: true,
             type: "POST",
-            url: "todo.php",
+            url: "pop.php",
             success: function(data) {  
-                console.log(data); 
-                        $( "#inputId" ).val(data); 
+                        $( "#inputId" ).html(data); 
+                        $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
             }
 
     })
 }
+$(document).ready(function(){
 
+    $.ajax({
+        type: "POST",
+        url: "renderStrike.php",
+        async: true,
+        data: {complete: '1'},
+        success: function(strikeArr){
+            console.log(strikeArr);
+            var obj = JSON.parse(strikeArr);
+            strikeArrLength = obj.length;
+            for(i = 0; i < strikeArrLength; i++){
+                if(obj[i] == 1){
+                    $("li:eq(" + i + ")").find("p").css("text-decoration", "line-through");
+                }else{
+                    $("li:eq(" + i + ")").find("p").css("text-decoration", "none ");
+                }
+            }
+        }
+    })
 
-
-
-
-
-
-
-
-
-
-
-
-
-//  $.ajax({
-//             type: "POST",
-//             url: "renderStrike.php",
-//             async: true,
-//             data: {complete: '1'},
-//             success: function(strikeArr){
-//                 console.log(strikeArr);
-//                 // console.log(msg);
-//                 var obj = JSON.parse(strikeArr);
-//                 console.log(obj);
-//                 strikeArrLenght = obj.length;
-//                 for(i = 0; i < strikeArrLength; i++){
-//                     // console.log(msg[i]);
-//                     if(msg[i] > 0){
-//                         $("li:eq(" + i + ")").find("p").css("text-decoration", "line-throguh ");
-//                     }else{
-//                         $("li:eq(" + i + ")").find("p").css("text-decoration", "none ");
-//                     }
-//                 }
-//                 // alert(data);
-//             }
-//         })
-
-
-
-
-    $(".button").click(function(){
+    $(".button").click(function(event){
+        event.preventDefault();
         var newEntry = $("#newentry").val();
+        var date = $("#date").val();
         $.ajax({
             url: "add.php",
+            async: true,
             method:"POST",
-            data: "val=" + newEntry,
-            dataType: "text",
+            dataType: "json",
+            data: {
+                duedate: date,
+                val: newEntry
+            },
             success:function(data){
-                
                 cleanUp();
             },
-            error: function(jqxhr, status, exception) {
-                alert('Exception:', exception)
-            }
         })        
     })
+
+
 
 
     $(".del").click(function(){
         var checkNum = $(this).parent().index();
         $.ajax({
+            async: true,
             type: "POST",
             url: "delete.php",
             data: "delete=" + checkNum,
@@ -154,9 +108,9 @@ function cleanUp(){
     })
 
     $(".done").click(function(){
-        var checkNum = $(this).parent().index();//this refers to the two buttons on the rederstrike so if any of the parents are cliced it will give the index of that entry 
-        // console.log(checkNum);
+        var checkNum = $(this).parent().index();
         $.ajax({
+            async: true,
             type: "POST",
             url: "done.php",
             data: "num=" + checkNum,
@@ -165,50 +119,20 @@ function cleanUp(){
                 var obj = JSON.parse(doneArray);
                 console.log(obj);
                 strikeArrLength = obj.length;
-                // console.log(strikeArrLength);
-                // console.log("runs");
                 for(i = 0; i < strikeArrLength; i++){
-                    // console.log(i);
-                    // console.log("loop");
                     if(obj[i] == 1){
-                        // console.log("line trough runs runs");
                         $("li:eq(" + i + ")").find("p").css("text-decoration", "line-through");
-
                     }
                     else{
                         $("li:eq(" + i + ")").find("p").css("text-decoration", "none");
-                        // console.log("none runs");
-
                     }
                 }
             }
         })
-
     })
-
 })
 
-// $("li").on("click,", ".del", function(){
-
-// this parent parant fodOut("fast");
-// var checkNum = $(this).parent().paraent().index();
-// $.post('delete.php', 'val=' + checkNum);
-
-// })
-// // now last thing missing is deleting item ?
-
-
-
-// })
-
-
-// $checkNumA - $_POST('val');
-
-
-
 </script>
-
-
 
 
 </body>
