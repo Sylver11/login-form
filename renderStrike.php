@@ -1,7 +1,9 @@
 <?php
+session_start();
 require_once "conn.php";
 // $sql= "SELECT * FROM list ORDER BY item_id DESC";
-$sql="SELECT * FROM list WHERE username = 'justus' ORDER BY item_id ASC";
+$param_username=$_SESSION['username'];
+$sql="SELECT * FROM list WHERE username = '$param_username' ORDER BY item_id ASC";
 $result = mysqli_query($conn, $sql);
 $tempNum=0;
 if($result->num_rows > 0){

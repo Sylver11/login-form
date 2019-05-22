@@ -1,7 +1,8 @@
 <?php
+session_start();
 require_once "conn.php";
 
-$param_username = "justus";
+$param_username = $_SESSION['username'];
 $sql = "SELECT * FROM list WHERE username='$param_username' ORDER BY id DESC";
 $result = mysqli_query($conn, $sql);
 $tempNum = 0;

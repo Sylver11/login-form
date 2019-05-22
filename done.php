@@ -1,8 +1,10 @@
 
 <?php
+session_start();
 require_once "conn.php";
 $checkNumA = $_POST["num"];
-$sql= "SELECT * FROM list WHERE username = 'justus' AND item_id='$checkNumA'";
+$param_username=$_SESSION['username'];
+$sql= "SELECT * FROM list WHERE username = '$param_username' AND item_id='$checkNumA'";
 $result = mysqli_query($conn, $sql);
 $row = $result->fetch_row();
     if($row[3] <= 0){

@@ -25,9 +25,23 @@ session_start();
     <button class="button_2">Add</button>  
 </form>
 <form action="todo.php" method="POST">
-    <input type="button" value="Logout" name="logout">
+    <input type="submit" value="Logout" name="logout">
 </form>
 <div class="inputId"></div>
+
+<?php
+if($_POST){
+if($_POST["logout"]){
+    session_destroy();
+    header("location: login.php");
+                exit;
+}
+}
+if(!isset($_SESSION['username'])){
+    header("location: login.php");
+                exit;
+}
+?>
 
 
 <script>

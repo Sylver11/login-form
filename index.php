@@ -12,15 +12,7 @@
 <input type="text" name="username" placeholder="Enter your username">
 <input type="password" name="password" placeholder="enter passwoord">
 <input type="password" name="password-confirm" placeholder="confirm password">
-<button name="submit">Registerrr</button>
-
-
-
-
-
-
-
-
+<button name="submit">Register</button>
 
 
 
