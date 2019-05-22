@@ -1,7 +1,7 @@
 <?php
 require_once "conn.php";
 // $sql= "SELECT * FROM list ORDER BY item_id DESC";
-$sql="SELECT * FROM list WHERE username = 'justus'";
+$sql="SELECT * FROM list WHERE username = 'justus' ORDER BY item_id ASC";
 $result = mysqli_query($conn, $sql);
 $tempNum=0;
 if($result->num_rows > 0){

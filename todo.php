@@ -18,20 +18,21 @@ session_start();
 
 <nav class="navbar"><p href="">Home</p><p>About</p><p>Me</p></nav>
 <form>
-    <input id="newentry" type="text" name="newentry">
+    <input class="newentry" type="text" name="newentry">
     <label for="">Due Date: 
-    <input id="date" type="date" name="duedate">
+    <input class="date" type="date" name="duedate">
     </label>
-    <button class="button">Add</button>  
+    <button class="button_2">Add</button>  
 </form>
 <form action="todo.php" method="POST">
     <input type="button" value="Logout" name="logout">
 </form>
-<div id="inputId"></div>
+<div class="inputId"></div>
 
 
 <script>
-   
+// $(document).ready(function(){
+//    $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
 cleanUp();
 function cleanUp(){
     $.ajax({
@@ -39,12 +40,24 @@ function cleanUp(){
             type: "POST",
             url: "pop.php",
             success: function(data) {  
-                $( "#inputId" ).html(data); 
+                $( ".inputId" ).html(data); 
                 $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
+                renderStrike();
             }
     })
 }
-$(document).ready(function(){
+
+refresh();
+function refresh(){
+    $.ajax({
+        async: true,
+        type: "POST",
+        url: "refresh.php",
+    })
+}
+
+// renderStrike();
+function renderStrike(){
     $.ajax({
         type: "POST",
         url: "renderStrike.php",
@@ -63,10 +76,14 @@ $(document).ready(function(){
             }
         }
     })
-    $(".button").click(function(event){
+}
+
+$(document).ready(function(){
+
+    $(".button_2").click(function(event){
         event.preventDefault();
-        var newEntry = $("#newentry").val();
-        var date = $("#date").val();
+        var newEntry = $(".newentry").val();
+        var date = $(".date").val();
         $.ajax({
             url: "add.php",
             async: true,
@@ -77,11 +94,16 @@ $(document).ready(function(){
                 val: newEntry
             },
             success:function(data){
+                refresh();
                 cleanUp();
+                
+                
+                // renderStrike();
             },
         })        
     })
-    $(".del").click(function(){
+    $(document).on('click','.del',function(){
+    // $(".del").click(function(){
         var checkNum = $(this).parent().index();
         $.ajax({
             async: true,
@@ -96,10 +118,12 @@ $(document).ready(function(){
                         console.log("this runs");
                         $("li:eq(" + del[0] + ")").addClass("none");
                     }
+                    refresh();
                 }
         })
     })
-    $(".done").click(function(){
+    $(document).on('click','.done',function(){
+    // $(".done").click(function(){
         var checkNum = $(this).parent().index();
         $.ajax({
             async: true,
@@ -124,6 +148,8 @@ $(document).ready(function(){
     })
 })
 </script>
+
+
 
 
 </body>
