@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <title>Document</title>
 </head>
-<body>
-
+<body >
+<main style="width:80%;">
+<h1>Welcome to your personal To-Do-App!</h1>
+<h3>Register for free and enjoy the best To-Do-App with deadline counter.</h3>
+<br>
 <form action="index.php" method="post">  
 <input type="text" name="username" placeholder="Enter your username">
 <input type="password" name="password" placeholder="enter passwoord">
@@ -25,12 +30,13 @@
 
 
 <?php
-require_once "conn.php";
-
-// if(!isset($_POST)){
+require_once "connection.php";
+// $sql2 ="CREATE TABLE users(
+//     id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+//     username VARCHAR(120),
+//     password VARCHAR(255))";
+// $conn->query($sql2);
 if($_POST){
-    // echo trim($_POST['username']);
-    // if(!isset($_POST)){
     if(empty(trim($_POST['username']))){
         $username_err = "Please enter a username";
         echo $username_err;
@@ -40,26 +46,16 @@ if($_POST){
             if($stmt = $conn->prepare($sql)){
                 $stmt->bind_param("s", $param_username);
             }
-        // $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $param_username);
         $param_username = trim($_POST['username']);
-        // echo "bind thing running";
-        
-    
-        // echo mysqli_error($conn);
-        //sanitane param username here 
-        //set parameter
-        // $param_username = trim($_POST['username']);
         if ($stmt->execute()){
             $stmt->store_result();
-                // echo "if statement on line 52 runs";
             if($stmt->num_rows ==1){
                 $username_err = "this username is alredy taken";
                 echo $username_err;
             }
             else{
                 $username = trim($_POST['username']);
-                // echo "username is being defined";
             }
         }
         else{
@@ -68,11 +64,6 @@ if($_POST){
         echo mysqli_error($conn);
         $stmt->close();
     }
-
-
-
-
-
 
 
     //validate password
@@ -89,9 +80,6 @@ if($_POST){
         echo mysqli_error($conn);
         echo "First Password was not empty and was not too short";
     }
-
-
-
 
 
     //second password validation 
@@ -131,6 +119,6 @@ if($_POST){
 
 ?>
 
-    
+   </main> 
 </body>
 </html>

@@ -1,1 +1,0 @@
-if($todo_res->num_row)

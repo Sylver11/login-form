@@ -2,17 +2,20 @@
 session_start();
 require_once "conn.php";
 
+$database = new Connection();
+$db = $database->open();
+
+
 $param_username = $_SESSION['username'];
 $sql = "SELECT * FROM list WHERE username='$param_username' ORDER BY id DESC";
-$result = mysqli_query($conn, $sql);
 $tempNum = 0;
-if ($result=mysqli_query($conn,$sql)){
-    while($row = $result->fetch_row()){
-        $list_id_count = $row[0];
-        $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
-        if(mysqli_query($conn, $sql_list_id)){
+
+foreach ($db->query($sql) as $row) {
+    $list_id_count = $row['id'];
+    $sql_list_id = "UPDATE list SET item_id='$tempNum' WHERE id='$list_id_count'";
+    if($db->query($sql_list_id)){
                 $tempNum++ ;
-        }
     }
 }
+
 ?>

@@ -10,24 +10,43 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Todo list</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    
 </head>
-<body>
+<body style="overflow-x: hidden">
+<main>
+    <div class="container">
 
-<nav class="navbar"><p href="">Home</p><p>About</p><p>Me</p></nav>
-<form>
-    <input class="newentry" type="text" name="newentry">
-    <label for="">Due Date: 
-    <input class="date" type="date" name="duedate">
-    </label>
-    <button class="button_2">Add</button>  
-</form>
-<form action="todo.php" method="POST">
+<nav class="navbar"><p href="">Welcome <?php echo $_SESSION['username']?></p><form action="todo.php" method="POST">
     <input type="submit" value="Logout" name="logout">
+</form></nav>
+<div style="height: 140px;"><img style="width: 100%; height:130px;"src="todo-pic" alt="busy"></div>
+
+<div>
+
+<form>
+    <div class="form-group">
+        <label for="newentry">I still need to:</label>
+        <input class="newentry form-control" type="text" name="newentry">
+    </div>
+    <div class="form-group">
+    <label for="date">Due Date: 
+    <input class="date form-control" type="date" name="duedate">
+    </label>
+    <button class="button_2">Add</button> 
+    </div>
+     
 </form>
+
 <div class="inputId"></div>
+
+    </div>
+
+    </main>
+
 
 <?php
 if($_POST){
@@ -45,22 +64,20 @@ if(!isset($_SESSION['username'])){
 
 
 <script>
-// $(document).ready(function(){
-//    $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
 cleanUp();
 function cleanUp(){
     $.ajax({
-            async: true,
-            type: "POST",
-            url: "pop.php",
-            success: function(data) {  
-                $( ".inputId" ).html(data); 
-                $("li").wrapInner("<p>").prepend("<button class=\"done\">Done</button><button class=\"del\">Delete</button>");
-                renderStrike();
-            }
+        async: true,
+        type: "POST",
+        url: "pop.php",
+        success: function(data) { 
+            console.log(data); 
+            $( ".inputId" ).html(data); 
+            $("li").wrapInner("<p>").append("<button class=\"done\">Done</button><button class=\"del\">Delete</button><button class=\"edit\">Edit</button><br><br><div class=\"update\"><input class=\"update-item\" type=\"text\"><button class=\"update-button\">Update</button></div><br>");
+            renderStrike();
+        }
     })
 }
-
 refresh();
 function refresh(){
     $.ajax({
@@ -69,8 +86,6 @@ function refresh(){
         url: "refresh.php",
     })
 }
-
-// renderStrike();
 function renderStrike(){
     $.ajax({
         type: "POST",
@@ -80,6 +95,7 @@ function renderStrike(){
         success: function(strikeArr){
             console.log(strikeArr);
             var obj = JSON.parse(strikeArr);
+            console.log(obj);
             strikeArrLength = obj.length;
             for(i = 0; i < strikeArrLength; i++){
                 if(obj[i] == 1){
@@ -91,13 +107,17 @@ function renderStrike(){
         }
     })
 }
-
 $(document).ready(function(){
-
+    $(".edit").click(function(event){
+        event.preventDefault();
+        $(this).parents("li").find(".update").css("display", "block");
+    })
     $(".button_2").click(function(event){
         event.preventDefault();
         var newEntry = $(".newentry").val();
         var date = $(".date").val();
+        $(this).closest('form').find("input[type=text], textarea").val("");
+        $(this).closest('form').find("input[type=date], textarea").val("");
         $.ajax({
             url: "add.php",
             async: true,
@@ -110,34 +130,22 @@ $(document).ready(function(){
             success:function(data){
                 refresh();
                 cleanUp();
-                
-                
-                // renderStrike();
             },
         })        
     })
     $(document).on('click','.del',function(){
-    // $(".del").click(function(){
         var checkNum = $(this).parent().index();
+        $(this).parent().addClass("none");
+        refresh();
         $.ajax({
             async: true,
             type: "POST",
             url: "delete.php",
             data: "delete=" + checkNum,
-            dataType: "text",
-            success: function(deleteArray){
-                var del = JSON.parse(deleteArray);
-                console.log(del);
-                    if(del[1]  ==1){
-                        console.log("this runs");
-                        $("li:eq(" + del[0] + ")").addClass("none");
-                    }
-                    refresh();
-                }
+            dataType: "text"
         })
     })
     $(document).on('click','.done',function(){
-    // $(".done").click(function(){
         var checkNum = $(this).parent().index();
         $.ajax({
             async: true,
@@ -157,12 +165,30 @@ $(document).ready(function(){
                         $("li:eq(" + i + ")").find("p").css("text-decoration", "none");
                     }
                 }
+                cleanUp();
             }
         })
     })
+    $(document).on('click','.update-button',function(){
+        var editnum = $(this).parent().parent().index();
+        var edit = $(".update-item").val();
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: "edit.php",
+            data: {
+                edit: edit,
+                editnum: editnum
+            },
+            dataType: "text",
+            success: function(){
+                cleanUp();
+            }
+        })
+        $(".update").css("display", "none");
+    })
 })
 </script>
-
 
 
 
